@@ -1,24 +1,11 @@
 package tk.valoeghese.mojtin.map.parser;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
-
 import tk.valoeghese.mojtin.map.ClassEntry;
 
 public class TinyParser extends ObfuscationMap {
-	public ObfuscationMap startParsing(String file) {
-		try (Stream<String> lineStream = Files.lines(Paths.get(file))) {
-			lineStream.forEach(this::parseLine);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return this;
-	}
-
-	private void parseLine(String line) {
+	@Override
+	protected void parseLine(String line) {
+		line = line.trim();
 		String type = line.substring(0, 5);
 
 		if (type.equals("CLASS")) {
@@ -35,28 +22,28 @@ public class TinyParser extends ObfuscationMap {
 	}
 
 	private void parseMethod(String[] in) {
-		final String clazzObfName = in[0];
+		final String clazzObfName = in[0].trim();
 
 		ClassEntry classEntry = this.entries.computeIfAbsent(clazzObfName, obfName -> new ClassEntry.Builder().obfName(obfName).build());
-		classEntry.addMethod(in[2], in[3], in[1]);
+		classEntry.addMethod(in[2].trim(), in[3].trim(), in[1].trim());
 	}
 
 	private void parseField(String[] in) {
-		final String clazzObfName = in[0];
+		final String clazzObfName = in[0].trim();
 
 		ClassEntry classEntry = this.entries.computeIfAbsent(clazzObfName, obfName -> new ClassEntry.Builder().obfName(obfName).build());
-		classEntry.addField(in[2], in[3], in[1]);
+		classEntry.addField(in[2].trim(), in[3].trim(), in[1].trim());
 	}
 
 	private void parseClass(String[] in) {
-		final String obfName = in[0];
+		final String obfName = in[0].trim();
 
 		if (this.entries.containsKey(obfName)) {
-			this.entries.get(obfName).setMappedName(in[1]);
+			this.entries.get(obfName).setMappedName(in[1].trim());
 		} else {
 			this.entries.put(obfName, new ClassEntry.Builder()
 					.obfName(obfName)
-					.mappedName(in[1])
+					.mappedName(in[1].trim())
 					.build());
 		}
 	}
