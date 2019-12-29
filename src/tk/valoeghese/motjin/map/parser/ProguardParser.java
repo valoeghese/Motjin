@@ -1,7 +1,7 @@
-package tk.valoeghese.mojtin.map.parser;
+package tk.valoeghese.motjin.map.parser;
 
-import tk.valoeghese.mojtin.map.ClassEntry;
-import tk.valoeghese.mojtin.map.Descriptor;
+import tk.valoeghese.motjin.map.ClassEntry;
+import tk.valoeghese.motjin.map.Descriptor;
 
 public class ProguardParser extends ObfuscationMap {
 	private ClassEntry recent;
@@ -13,9 +13,11 @@ public class ProguardParser extends ObfuscationMap {
 		if (firstChar != '#') {
 			if (firstChar == ' ') {
 				String lineTrim = line.trim();
-				
+
 				if (Character.isDigit(lineTrim.charAt(0))) {
 					parseMethod(lineTrim.split(":")[2].split(" "));
+				} else {
+					parseField(lineTrim.split(" "));
 				}
 			} else {
 				this.parseClass(line.trim().split(" "));
@@ -23,18 +25,35 @@ public class ProguardParser extends ObfuscationMap {
 		}
 	}
 
+	private void parseField(String[] in) {
+		String descriptor = Descriptor.of(proguardToTiny(in[0]));
+		String mappedName = in[1].trim();
+		String obfName = in[2].trim();
+
+		this.recent.addField(obfName, mappedName, descriptor);
+	}
+
 	private void parseMethod(String[] in) {
 		String returnType = Descriptor.of(proguardToTiny(in[0]));
 		String[] methodSplit = in[1].split("(");
 
 		String mappedName = methodSplit[0].trim();
-		String descriptor = parseMethodDescriptor(returnType, methodSplit[1]);
-		String obfName = in[3];
+		String signature = parseMethodSignature(returnType, methodSplit[1]);
+		String obfName = in[3].trim();
+
+		this.recent.addMethod(obfName, mappedName, signature);
 	}
 
-	private String parseMethodDescriptor(String returnType, String string) {
-		// TODO Auto-generated method stub
-		return null;
+	private String parseMethodSignature(String returnType, String parameters) {
+		String[] paramArr = parameters.substring(0, parameters.length()).split(",");
+		StringBuilder descriptor = new StringBuilder("(");
+
+		for (String proguardParam : paramArr) {
+			descriptor.append(Descriptor.of(proguardToTiny(proguardParam)));
+		}
+
+		descriptor.append(returnType);
+		return descriptor.toString();
 	}
 
 	private void parseClass(String[] in) {
@@ -49,7 +68,7 @@ public class ProguardParser extends ObfuscationMap {
 		this.entries.put(obfName, classEntry);
 		this.recent = classEntry;
 	}
-	
+
 	private static String proguardToTiny(String in) {
 		// convert proguard "." for package separation to "/"
 		return in.trim().replace('.', '/');

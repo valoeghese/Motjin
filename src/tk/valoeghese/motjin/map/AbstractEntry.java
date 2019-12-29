@@ -1,4 +1,4 @@
-package tk.valoeghese.mojtin.map;
+package tk.valoeghese.motjin.map;
 
 public abstract class AbstractEntry {
 	protected AbstractEntry(String obfName, String mappedName) {

@@ -1,6 +1,6 @@
-package tk.valoeghese.mojtin.map.parser;
+package tk.valoeghese.motjin.map.parser;
 
-import tk.valoeghese.mojtin.map.ClassEntry;
+import tk.valoeghese.motjin.map.ClassEntry;
 
 public class TinyParser extends ObfuscationMap {
 	@Override

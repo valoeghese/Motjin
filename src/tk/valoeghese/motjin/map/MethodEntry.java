@@ -1,4 +1,4 @@
-package tk.valoeghese.mojtin.map;
+package tk.valoeghese.motjin.map;
 
 public class MethodEntry extends AbstractEntry {
 	public MethodEntry(String obfName, String mappedName, String signature, ClassEntry parent) {

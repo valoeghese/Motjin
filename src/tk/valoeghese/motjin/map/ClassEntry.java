@@ -1,4 +1,4 @@
-package tk.valoeghese.mojtin.map;
+package tk.valoeghese.motjin.map;
 
 import java.util.ArrayList;
 import java.util.List;

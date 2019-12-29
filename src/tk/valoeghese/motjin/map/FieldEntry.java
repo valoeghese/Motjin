@@ -1,4 +1,4 @@
-package tk.valoeghese.mojtin.map;
+package tk.valoeghese.motjin.map;
 
 public class FieldEntry extends AbstractEntry {
 	public FieldEntry(String obfName, String mappedName, String descriptor, ClassEntry parent) {

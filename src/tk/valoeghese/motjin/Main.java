@@ -1,4 +1,4 @@
-package tk.valoeghese.mojtin;
+package tk.valoeghese.motjin;
 
 public class Main {
 	public static MainArgs options;

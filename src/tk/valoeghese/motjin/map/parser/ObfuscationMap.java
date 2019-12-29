@@ -1,4 +1,4 @@
-package tk.valoeghese.mojtin.map.parser;
+package tk.valoeghese.motjin.map.parser;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import tk.valoeghese.mojtin.map.ClassEntry;
+import tk.valoeghese.motjin.map.ClassEntry;
 
 public abstract class ObfuscationMap {
 	public final Map<String, ClassEntry> entries = new HashMap<>();

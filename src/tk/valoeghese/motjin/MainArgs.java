@@ -1,4 +1,4 @@
-package tk.valoeghese.mojtin;
+package tk.valoeghese.motjin;
 
 import java.util.HashMap;
 import java.util.Map;
