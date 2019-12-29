@@ -5,18 +5,20 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import tk.valoeghese.motjin.map.ClassEntry;
-import tk.valoeghese.motjin.map.TinyDescriptor;
 import tk.valoeghese.motjin.map.FieldEntry;
+import tk.valoeghese.motjin.map.TinyDescriptor;
 import tk.valoeghese.motjin.map.parser.ObfuscationMap;
+import tk.valoeghese.motjin.util.Debugger;
 
 public class Main {
 	public static MainArgs options;
+	private static Debugger debugger = Debugger.of(5, "main");
 
 	public static void main(String[] args) {
 		options = MainArgs.of(args);
 
-		ObfuscationMap intermediary = ObfuscationMap.parseTiny(options.intermediaryMap);
 		ObfuscationMap mojmap = ObfuscationMap.parseProguard(options.mojMap);
+		ObfuscationMap intermediary = ObfuscationMap.parseTiny(options.intermediaryMap);
 
 		writeTiny(options.outputFile, intermediary, mojmap);
 	}
@@ -40,8 +42,8 @@ public class Main {
 					// Get mojmap field key
 					boolean flag = intermediaryFieldEntry.descriptor.charAt(0) == 'L';
 					String mojmapDescriptor = flag ? getDescriptorMappedForObf(mojmap, intermediaryFieldEntry.descriptor) : intermediaryFieldEntry.descriptor;
-//					System.out.println(mojmapDescriptor);
 					String mojmapFieldKey = intermediaryFieldEntry.obfName + ":" + mojmapDescriptor;
+					debugger.listen(mojmapFieldKey);
 
 					// Get field key and set final column mapping
 					FieldEntry mojmapFieldEntry = mojmapEntry.fieldMap.getOrDefault(mojmapFieldKey, intermediaryFieldEntry);
@@ -68,7 +70,7 @@ public class Main {
 		ClassEntry entry = getClassEntryForDescriptor(remappingMap, obfDescriptor);
 		if (entry == null) {
 			// Is not an item with a mapping. Likely a library class.
-			return TinyDescriptor.of(obfDescriptor);
+			return obfDescriptor;
 		} else {
 			return TinyDescriptor.of(entry.getMappedName());
 		}

@@ -38,7 +38,7 @@ public final class ProguardParser extends ObfuscationMap {
 	private void parseField(String[] in) {
 		String descriptor = TinyDescriptor.of(p2tArrays(p2tPackage(in[0])));
 		String mappedName = in[1].trim();
-		String obfName = in[2].trim();
+		String obfName = in[3].trim();
 
 		this.recent.addField(obfName, mappedName, descriptor);
 	}
@@ -81,8 +81,7 @@ public final class ProguardParser extends ObfuscationMap {
 				.mappedName(mappedName) 
 				.build();
 
-		this.obfToClassMap.put(obfName, classEntry);
-		this.mappedToClassMap.put(mappedName, classEntry);
+		this.addClassEntry(obfName, mappedName, classEntry);
 		this.recent = classEntry;
 	}
 

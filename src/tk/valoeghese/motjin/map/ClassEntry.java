@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tk.valoeghese.motjin.util.Debugger;
+
 public class ClassEntry extends AbstractEntry {
 	private ClassEntry(Builder builder) {
 		super(builder.obfName, builder.mappedName);
@@ -15,13 +17,17 @@ public class ClassEntry extends AbstractEntry {
 	public final List<MethodEntry> methods = new ArrayList<>();
 	public final Map<String, FieldEntry> fieldMap = new HashMap<>();
 	public final Map<String, MethodEntry> methodMap = new HashMap<>();
+	
+	private static Debugger debugger = Debugger.of(5, "classentry");
 
 	private String mappedNameOverride;
 
 	public ClassEntry addField(String obfName, String mappedName, String descriptor) {
 		FieldEntry entry = new FieldEntry(obfName, mappedName, descriptor, this);
 		this.fields.add(entry);
-		this.fieldMap.put(obfName + ":" + descriptor, entry);
+		String eeeee = obfName + ":" + descriptor;
+		if (mappedName.equals("DATE_FORMAT") && obfName.equals("a")) debugger.listen(eeeee);
+		this.fieldMap.put(eeeee, entry);
 		return this;
 	}
 
