@@ -2,21 +2,25 @@ package tk.valoeghese.motjin.map.parser;
 
 import tk.valoeghese.motjin.map.ClassEntry;
 
-public class TinyParser extends ObfuscationMap {
+public final class TinyParser extends ObfuscationMap {
+	TinyParser() {
+		super("tinyParser");
+	}
+
 	@Override
 	protected void parseLine(String line) {
 		line = line.trim();
 		String type = line.substring(0, 5);
 
 		if (type.equals("CLASS")) {
-			this.parseClass(line.substring(5).split("\t"));
+			this.parseClass(line.substring(6).split("\t"));
 		} else if (type.equals("FIELD")) {
-			this.parseField(line.substring(5).split("\t"));
+			this.parseField(line.substring(6).split("\t"));
 		} else {
 			type = line.substring(0, 6);
 
 			if (type.equals("METHOD")) {
-				this.parseMethod(line.substring(6).split("\t"));
+				this.parseMethod(line.substring(7).split("\t"));
 			}
 		}
 	}

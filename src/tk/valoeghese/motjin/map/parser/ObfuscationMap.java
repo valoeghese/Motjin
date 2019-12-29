@@ -8,9 +8,16 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import tk.valoeghese.motjin.map.ClassEntry;
+import tk.valoeghese.motjin.util.Debugger;
 
 public abstract class ObfuscationMap {
-	public final Map<String, ClassEntry> entries = new HashMap<>();
+	protected ObfuscationMap(String type) {
+		this.debugger = Debugger.of(3, type);
+	}
+
+	protected final Debugger debugger;
+
+	protected final Map<String, ClassEntry> entries = new HashMap<>();
 
 	public ObfuscationMap startParsing(String file) {
 		try (Stream<String> lineStream = Files.lines(Paths.get(file))) {
@@ -25,14 +32,18 @@ public abstract class ObfuscationMap {
 
 		return this;
 	}
-	
+
 	protected abstract void parseLine(String line);
+
+	public ClassEntry getClassEntry(String obfName) {
+		return this.entries.get(obfName);
+	}
 
 	public static ObfuscationMap parseTiny(String file) {
 		return new TinyParser().startParsing(file);
 	}
-	
-	public static ObfuscationMap parseProguard() {
-		return null; // TODO
+
+	public static ObfuscationMap parseProguard(String file) {
+		return new ProguardParser().startParsing(file);
 	}
 }

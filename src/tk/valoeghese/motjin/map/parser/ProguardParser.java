@@ -3,7 +3,11 @@ package tk.valoeghese.motjin.map.parser;
 import tk.valoeghese.motjin.map.ClassEntry;
 import tk.valoeghese.motjin.map.Descriptor;
 
-public class ProguardParser extends ObfuscationMap {
+public final class ProguardParser extends ObfuscationMap {
+	ProguardParser() {
+		super("proguardParser");
+	}
+
 	private ClassEntry recent;
 
 	@Override
@@ -15,7 +19,7 @@ public class ProguardParser extends ObfuscationMap {
 				String lineTrim = line.trim();
 
 				if (Character.isDigit(lineTrim.charAt(0))) {
-					parseMethod(lineTrim.split(":")[2].split(" "));
+					parseMethod(lineTrim.split("\\:")[2].split(" "));
 				} else {
 					parseField(lineTrim.split(" "));
 				}
@@ -35,7 +39,7 @@ public class ProguardParser extends ObfuscationMap {
 
 	private void parseMethod(String[] in) {
 		String returnType = Descriptor.of(proguardToTiny(in[0]));
-		String[] methodSplit = in[1].split("(");
+		String[] methodSplit = in[1].split("\\(");
 
 		String mappedName = methodSplit[0].trim();
 		String signature = parseMethodSignature(returnType, methodSplit[1]);
@@ -58,7 +62,7 @@ public class ProguardParser extends ObfuscationMap {
 
 	private void parseClass(String[] in) {
 		String obfName = proguardToTiny(in[2]);
-		obfName = obfName.substring(0, obfName.length() - 2); // remove ":" character
+		obfName = obfName.substring(0, obfName.length() - 1); // remove ":" character
 
 		ClassEntry classEntry = new ClassEntry.Builder()
 				.obfName(obfName)
