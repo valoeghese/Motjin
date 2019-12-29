@@ -6,9 +6,11 @@ import java.io.UnsupportedEncodingException;
 
 import tk.valoeghese.motjin.map.ClassEntry;
 import tk.valoeghese.motjin.map.FieldEntry;
+import tk.valoeghese.motjin.map.MethodEntry;
 import tk.valoeghese.motjin.map.TinyDescriptor;
 import tk.valoeghese.motjin.map.parser.ObfuscationMap;
 import tk.valoeghese.motjin.util.Debugger;
+import tk.valoeghese.motjin.util.MethodSignatureRemapper;
 
 public class Main {
 	public static MainArgs options;
@@ -43,14 +45,27 @@ public class Main {
 					boolean flag = intermediaryFieldEntry.descriptor.charAt(0) == 'L';
 					String mojmapDescriptor = flag ? getDescriptorMappedForObf(mojmap, intermediaryFieldEntry.descriptor) : intermediaryFieldEntry.descriptor;
 					String mojmapFieldKey = intermediaryFieldEntry.obfName + ":" + mojmapDescriptor;
-					debugger.listen(mojmapFieldKey);
 
-					// Get field key and set final column mapping
+					// Get field entry and set final column mapping
 					FieldEntry mojmapFieldEntry = mojmapEntry.fieldMap.getOrDefault(mojmapFieldKey, intermediaryFieldEntry);
 					intermediaryFieldEntry.setFinalColumnMapping(mojmapFieldEntry.getMappedName());
 
 					// Add to output
 					output.append("\n").append(intermediaryFieldEntry.toString());
+				});
+
+				// Process Methods
+				intermediaryEntry.methods.forEach(intermediaryMethodEntry -> {
+					// Get mojmap method key
+					String mojmapSignature = MethodSignatureRemapper.remapMethodSignature(intermediaryMethodEntry.signature, descriptor -> getMappedForObf(mojmap, descriptor));
+					String mojmapMethodKey = intermediaryMethodEntry.obfName + ":" + mojmapSignature;
+
+					// Get method entry and set final column mapping
+					MethodEntry mojmapMethodEntry = mojmapEntry.methodMap.getOrDefault(mojmapMethodKey, intermediaryMethodEntry);
+					intermediaryMethodEntry.setFinalColumnMapping(mojmapMethodEntry.getMappedName());
+
+					// Add to output
+					output.append("\n").append(intermediaryMethodEntry.toString());
 				});
 
 				writer.println(output.toString());
@@ -65,7 +80,7 @@ public class Main {
 		ClassEntry result = remappingMap.getClassEntryForObf(clazz);
 		return result;
 	}
-	
+
 	private static String getDescriptorMappedForObf(ObfuscationMap remappingMap, String obfDescriptor) {
 		ClassEntry entry = getClassEntryForDescriptor(remappingMap, obfDescriptor);
 		if (entry == null) {
@@ -73,6 +88,16 @@ public class Main {
 			return obfDescriptor;
 		} else {
 			return TinyDescriptor.of(entry.getMappedName());
+		}
+	}
+
+	private static String getMappedForObf(ObfuscationMap remappingMap, String descriptor) {
+		ClassEntry entry = remappingMap.getClassEntryForObf(descriptor);
+		if (entry == null) {
+			// Is not an item with a mapping. Likely a library class.
+			return descriptor;
+		} else {
+			return entry.getMappedName();
 		}
 	}
 }
