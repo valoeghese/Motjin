@@ -39,8 +39,8 @@ public class Main {
 				intermediaryEntry.fields.forEach(intermediaryFieldEntry -> {
 					// Get mojmap field key
 					boolean flag = intermediaryFieldEntry.descriptor.charAt(0) == 'L';
-					String mojmapDescriptor = flag ? TinyDescriptor.of(getClassEntryForDescriptor(mojmap, intermediaryFieldEntry.descriptor).getMappedName()) : intermediaryFieldEntry.descriptor;
-					System.out.println(mojmapDescriptor);
+					String mojmapDescriptor = flag ? getDescriptorMappedForObf(mojmap, intermediaryFieldEntry.descriptor) : intermediaryFieldEntry.descriptor;
+//					System.out.println(mojmapDescriptor);
 					String mojmapFieldKey = intermediaryFieldEntry.obfName + ":" + mojmapDescriptor;
 
 					// Get field key and set final column mapping
@@ -59,10 +59,18 @@ public class Main {
 	}
 
 	private static ClassEntry getClassEntryForDescriptor(ObfuscationMap remappingMap, String descriptor) {
-		ClassEntry result = remappingMap.getClassEntryForObf(TinyDescriptor.classFromDescriptor(descriptor));
-		if (result == null) {
-			System.out.println("OhNo Null");
-		}
+		String clazz = TinyDescriptor.classFromDescriptor(descriptor);
+		ClassEntry result = remappingMap.getClassEntryForObf(clazz);
 		return result;
+	}
+	
+	private static String getDescriptorMappedForObf(ObfuscationMap remappingMap, String obfDescriptor) {
+		ClassEntry entry = getClassEntryForDescriptor(remappingMap, obfDescriptor);
+		if (entry == null) {
+			// Is not an item with a mapping. Likely a library class.
+			return TinyDescriptor.of(obfDescriptor);
+		} else {
+			return TinyDescriptor.of(entry.getMappedName());
+		}
 	}
 }

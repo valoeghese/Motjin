@@ -67,7 +67,7 @@ public final class ProguardParser extends ObfuscationMap {
 		}
 
 		signature.append(")").append(returnType);
-		debugger.listen(signature.toString());
+		//debugger.listen(signature.toString());
 		return signature.toString();
 	}
 
@@ -93,7 +93,7 @@ public final class ProguardParser extends ObfuscationMap {
 
 	private String p2tArraysDebug(String in) {
 		if (in.charAt(in.length() - 1) == ']') {
-			String result = '[' + in + in.substring(0, in.length() - 2);
+			String result = p2tModifyArrays(in);
 			debugger.listen(result);
 			return result;
 		} else {
@@ -103,9 +103,13 @@ public final class ProguardParser extends ObfuscationMap {
 
 	private static String p2tArrays(String in) {
 		if (in.charAt(in.length() - 1) == ']') {
-			return '[' + in + in.substring(0, in.length() - 2);
+			return p2tModifyArrays(in);
 		} else {
 			return in;
 		}
+	}
+
+	private static String p2tModifyArrays(String in) {
+		return '[' + in.substring(0, in.length() - 2);
 	}
 }
