@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import tk.valoeghese.motjin.map.ClassEntry;
-import tk.valoeghese.motjin.map.Descriptor;
+import tk.valoeghese.motjin.map.TinyDescriptor;
 import tk.valoeghese.motjin.map.FieldEntry;
 import tk.valoeghese.motjin.map.parser.ObfuscationMap;
 
@@ -39,7 +39,7 @@ public class Main {
 				intermediaryEntry.fields.forEach(intermediaryFieldEntry -> {
 					// Get mojmap field key
 					boolean flag = intermediaryFieldEntry.descriptor.charAt(0) == 'L';
-					String mojmapDescriptor = flag ? Descriptor.of(getClassEntryForDescriptor(mojmap, intermediaryFieldEntry.descriptor).getMappedName()) : intermediaryFieldEntry.descriptor;
+					String mojmapDescriptor = flag ? TinyDescriptor.of(getClassEntryForDescriptor(mojmap, intermediaryFieldEntry.descriptor).getMappedName()) : intermediaryFieldEntry.descriptor;
 					System.out.println(mojmapDescriptor);
 					String mojmapFieldKey = intermediaryFieldEntry.obfName + ":" + mojmapDescriptor;
 
@@ -59,7 +59,7 @@ public class Main {
 	}
 
 	private static ClassEntry getClassEntryForDescriptor(ObfuscationMap remappingMap, String descriptor) {
-		ClassEntry result = remappingMap.getClassEntryForObf(Descriptor.classFromDescriptor(descriptor));
+		ClassEntry result = remappingMap.getClassEntryForObf(TinyDescriptor.classFromDescriptor(descriptor));
 		if (result == null) {
 			System.out.println("OhNo Null");
 		}

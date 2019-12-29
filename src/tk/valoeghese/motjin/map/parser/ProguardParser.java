@@ -1,7 +1,7 @@
 package tk.valoeghese.motjin.map.parser;
 
 import tk.valoeghese.motjin.map.ClassEntry;
-import tk.valoeghese.motjin.map.Descriptor;
+import tk.valoeghese.motjin.map.TinyDescriptor;
 
 // Note that signatures and descriptors of methods and fields use the mapped names with this parser
 // Instead of the standard for TINY mappings, which is that of using the obfuscated names for signatures and descriptors
@@ -36,7 +36,7 @@ public final class ProguardParser extends ObfuscationMap {
 	}
 
 	private void parseField(String[] in) {
-		String descriptor = Descriptor.of(proguardToTiny(in[0]));
+		String descriptor = TinyDescriptor.of(p2tArrays(p2tPackage(in[0])));
 		String mappedName = in[1].trim();
 		String obfName = in[2].trim();
 
@@ -44,7 +44,7 @@ public final class ProguardParser extends ObfuscationMap {
 	}
 
 	private void parseMethod(String[] in) {
-		String returnType = Descriptor.of(proguardToTiny(in[0]));
+		String returnType = TinyDescriptor.of(p2tArrays(p2tPackage(in[0])));
 		String[] methodSplit = in[1].split("\\(");
 
 		String mappedName = methodSplit[0].trim();
@@ -55,21 +55,26 @@ public final class ProguardParser extends ObfuscationMap {
 	}
 
 	private String parseMethodSignature(String returnType, String parameters) {
-		String[] paramArr = parameters.substring(0, parameters.length()).split(",");
-		StringBuilder descriptor = new StringBuilder("(");
+		boolean flag = parameters.length() > 1;
+		StringBuilder signature = new StringBuilder("(");
 
-		for (String proguardParam : paramArr) {
-			descriptor.append(Descriptor.of(proguardToTiny(proguardParam)));
+		if (flag) {
+			String[] paramArr = parameters.substring(0, parameters.length() - 1).split(",");
+
+			for (String proguardParam : paramArr) {
+				signature.append(TinyDescriptor.of(p2tArrays(p2tPackage(proguardParam))));
+			}
 		}
 
-		descriptor.append(returnType);
-		return descriptor.toString();
+		signature.append(")").append(returnType);
+		debugger.listen(signature.toString());
+		return signature.toString();
 	}
 
 	private void parseClass(String[] in) {
-		String obfName = proguardToTiny(in[2]);
+		String obfName = p2tPackage(in[2]);
 		obfName = obfName.substring(0, obfName.length() - 1); // remove ":" character
-		String mappedName = proguardToTiny(in[0]);
+		String mappedName = p2tPackage(in[0]);
 
 		ClassEntry classEntry = new ClassEntry.Builder()
 				.obfName(obfName)
@@ -81,8 +86,26 @@ public final class ProguardParser extends ObfuscationMap {
 		this.recent = classEntry;
 	}
 
-	private static String proguardToTiny(String in) {
+	private static String p2tPackage(String in) {
 		// convert proguard "." for package separation to "/"
 		return in.trim().replace('.', '/');
+	}
+
+	private String p2tArraysDebug(String in) {
+		if (in.charAt(in.length() - 1) == ']') {
+			String result = '[' + in + in.substring(0, in.length() - 2);
+			debugger.listen(result);
+			return result;
+		} else {
+			return in;
+		}
+	}
+
+	private static String p2tArrays(String in) {
+		if (in.charAt(in.length() - 1) == ']') {
+			return '[' + in + in.substring(0, in.length() - 2);
+		} else {
+			return in;
+		}
 	}
 }

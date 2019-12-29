@@ -2,8 +2,8 @@ package tk.valoeghese.motjin.map;
 
 import tk.valoeghese.motjin.util.Tuple;
 
-public final class Descriptor {
-	private Descriptor() {
+public final class TinyDescriptor {
+	private TinyDescriptor() {
 	}
 
 	public static final String BYTE = "B";
@@ -15,8 +15,21 @@ public final class Descriptor {
 	public static final String BOOLEAN = "Z";
 	public static final String VOID = "V";
 
-	public static String ofClass(String clazz) {
-		return "L" + clazz + ";";
+	// For the initial proguard parsing
+	public static final String ABYTE = "[B";
+	public static final String ASHORT = "[S";
+	public static final String AINT = "[I";
+	public static final String ALONG = "[J";
+	public static final String AFLOAT = "[F";
+	public static final String ADOUBLE = "[D";
+	public static final String ABOOLEAN = "[Z";
+
+	public static String ofClass(String clazz, boolean tinyArray) {
+		if (tinyArray) {
+			return "[L" + clazz + ";";
+		} else {
+			return "L" + clazz + ";";
+		}
 	}
 
 	public static String classFromDescriptor(String descriptor) {
@@ -24,25 +37,28 @@ public final class Descriptor {
 	}
 
 	public static String of(String in) {
-		switch (in) {
+		boolean tinyArray = in.charAt(0) == '['; // hack to handle arrays formatted in tiny in the initial proguard parsing
+		String toSwitch = tinyArray ? in.substring(1) : in;
+
+		switch (toSwitch) {
 		case "void":
 			return VOID;
 		case "byte":
-			return BYTE;
+			return tinyArray ? ABYTE : BYTE;
 		case "short":
-			return SHORT;
+			return tinyArray ? ASHORT : SHORT;
 		case "int":
-			return INT;
+			return tinyArray ? AINT : INT;
 		case "long":
-			return LONG;
+			return tinyArray ? ALONG : LONG;
 		case "float":
-			return FLOAT;
+			return tinyArray ? AFLOAT : FLOAT;
 		case "double":
-			return DOUBLE;
+			return tinyArray ? ADOUBLE : DOUBLE;
 		case "boolean":
-			return BOOLEAN;
+			return tinyArray ? ABOOLEAN : BOOLEAN;
 		default:
-			return ofClass(in);
+			return ofClass(toSwitch, tinyArray);
 		}
 	}
 

@@ -13,7 +13,7 @@ import tk.valoeghese.motjin.util.Debugger;
 
 public abstract class ObfuscationMap {
 	protected ObfuscationMap(String type) {
-		this.debugger = Debugger.of(3, type);
+		this.debugger = Debugger.of(5, type);
 	}
 
 	protected final Debugger debugger;
