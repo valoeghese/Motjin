@@ -1,26 +1,34 @@
 package tk.valoeghese.motjin.map;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClassEntry extends AbstractEntry {
 	private ClassEntry(Builder builder) {
 		super(builder.obfName, builder.mappedName);
-
 		this.mappedNameOverride = builder.mappedName;
 	}
 
 	public final List<FieldEntry> fields = new ArrayList<>();
 	public final List<MethodEntry> methods = new ArrayList<>();
+	public final Map<String, FieldEntry> fieldMap = new HashMap<>();
+	public final Map<String, MethodEntry> methodMap = new HashMap<>();
+
 	private String mappedNameOverride;
 
 	public ClassEntry addField(String obfName, String mappedName, String descriptor) {
-		this.fields.add(new FieldEntry(obfName, mappedName, descriptor, this));
+		FieldEntry entry = new FieldEntry(obfName, mappedName, descriptor, this);
+		this.fields.add(entry);
+		this.fieldMap.put(obfName + ":" + descriptor, entry);
 		return this;
 	}
 
 	public ClassEntry addMethod(String obfName, String mappedName, String signature) {
-		this.methods.add(new MethodEntry(obfName, mappedName, signature, this));
+		MethodEntry entry = new MethodEntry(obfName, mappedName, signature, this);
+		this.methods.add(entry);
+		this.methodMap.put(obfName + ":" + signature, entry);
 		return this;
 	}
 

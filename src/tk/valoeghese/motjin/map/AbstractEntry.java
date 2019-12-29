@@ -8,10 +8,13 @@ public abstract class AbstractEntry {
 
 	public final String obfName;
 	private final String mappedName;
+	protected String finalColumnMapping = null;
 
-	public String finalColumnMapping = null;
-	
 	public String getMappedName() {
 		return this.mappedName;
+	}
+
+	public void setFinalColumnMapping(String mapping) {
+		this.finalColumnMapping = mapping;
 	}
 }

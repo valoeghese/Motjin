@@ -28,27 +28,34 @@ public final class TinyParser extends ObfuscationMap {
 	private void parseMethod(String[] in) {
 		final String clazzObfName = in[0].trim();
 
-		ClassEntry classEntry = this.entries.computeIfAbsent(clazzObfName, obfName -> new ClassEntry.Builder().obfName(obfName).build());
+		ClassEntry classEntry = this.obfToClassMap.computeIfAbsent(clazzObfName, obfName -> new ClassEntry.Builder().obfName(obfName).build());
 		classEntry.addMethod(in[2].trim(), in[3].trim(), in[1].trim());
 	}
 
 	private void parseField(String[] in) {
 		final String clazzObfName = in[0].trim();
 
-		ClassEntry classEntry = this.entries.computeIfAbsent(clazzObfName, obfName -> new ClassEntry.Builder().obfName(obfName).build());
+		ClassEntry classEntry = this.obfToClassMap.computeIfAbsent(clazzObfName, obfName -> new ClassEntry.Builder().obfName(obfName).build());
 		classEntry.addField(in[2].trim(), in[3].trim(), in[1].trim());
 	}
 
 	private void parseClass(String[] in) {
 		final String obfName = in[0].trim();
+		final String mappedName = in[1].trim();
 
-		if (this.entries.containsKey(obfName)) {
-			this.entries.get(obfName).setMappedName(in[1].trim());
+		if (this.obfToClassMap.containsKey(obfName)) {
+			ClassEntry classEntry = this.obfToClassMap.get(obfName);
+
+			classEntry.setMappedName(mappedName);
+			this.mappedToClassMap.put(mappedName, classEntry);
 		} else {
-			this.entries.put(obfName, new ClassEntry.Builder()
+			ClassEntry classEntry = new ClassEntry.Builder()
 					.obfName(obfName)
-					.mappedName(in[1].trim())
-					.build());
+					.mappedName(mappedName)
+					.build();
+
+			this.obfToClassMap.put(obfName, classEntry);
+			this.mappedToClassMap.put(mappedName, classEntry);
 		}
 	}
 }

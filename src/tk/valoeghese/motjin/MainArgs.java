@@ -7,10 +7,12 @@ public class MainArgs {
 	private MainArgs(TempArgs temp) {
 		mojMap = temp.getString("mojmap", "./client.txt");
 		intermediaryMap = temp.getString("intermediary", "./mappings.tiny");
+		outputFile = temp.getString("o", "./mojmap.tiny");
 	}
 
 	public final String mojMap;
 	public final String intermediaryMap;
+	public final String outputFile;
 
 	public static MainArgs of(String[] args) {
 		Map<String, String> valueMap = new HashMap<>();

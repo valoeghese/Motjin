@@ -3,6 +3,8 @@ package tk.valoeghese.motjin.map.parser;
 import tk.valoeghese.motjin.map.ClassEntry;
 import tk.valoeghese.motjin.map.Descriptor;
 
+// Note that signatures and descriptors of methods and fields use the mapped names with this parser
+// Instead of the standard for TINY mappings, which is that of using the obfuscated names for signatures and descriptors
 public final class ProguardParser extends ObfuscationMap {
 	ProguardParser() {
 		super("proguardParser");
@@ -21,7 +23,11 @@ public final class ProguardParser extends ObfuscationMap {
 				if (Character.isDigit(lineTrim.charAt(0))) {
 					parseMethod(lineTrim.split("\\:")[2].split(" "));
 				} else {
-					parseField(lineTrim.split(" "));
+					if (lineTrim.contains("(")) {
+						parseMethod(lineTrim.split(" "));
+					} else {
+						parseField(lineTrim.split(" "));
+					}
 				}
 			} else {
 				this.parseClass(line.trim().split(" "));
@@ -63,13 +69,15 @@ public final class ProguardParser extends ObfuscationMap {
 	private void parseClass(String[] in) {
 		String obfName = proguardToTiny(in[2]);
 		obfName = obfName.substring(0, obfName.length() - 1); // remove ":" character
+		String mappedName = proguardToTiny(in[0]);
 
 		ClassEntry classEntry = new ClassEntry.Builder()
 				.obfName(obfName)
-				.mappedName(proguardToTiny(in[0])) 
+				.mappedName(mappedName) 
 				.build();
 
-		this.entries.put(obfName, classEntry);
+		this.obfToClassMap.put(obfName, classEntry);
+		this.mappedToClassMap.put(mappedName, classEntry);
 		this.recent = classEntry;
 	}
 

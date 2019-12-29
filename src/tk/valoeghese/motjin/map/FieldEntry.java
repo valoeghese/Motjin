@@ -11,11 +11,6 @@ public class FieldEntry extends AbstractEntry {
 	public final String descriptor;
 	public final ClassEntry parent;
 
-	public FieldEntry setFinalColumnMapping(String mapping) {
-		this.finalColumnMapping = mapping;
-		return this;
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("FIELD\t")
